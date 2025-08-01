@@ -10,6 +10,15 @@ const rl = readline.createInterface({
     output: process.stdout
 });
 
+const showHeading = () => {
+    console.log('\n' +
+        '▗▄▄▖ ▗▖ ▗▖▗▖   ▗▖ ▗▖     ▗▄▖ ▗▄▄▖▗▄▄▄▖     ▗▄▄▖ ▗▄▖ ▗▖   ▗▖   ▗▄▄▄▖▗▄▄▖ \n' +
+        '▐▌ ▐▌▐▌ ▐▌▐▌   ▐▌▗▞▘    ▐▌ ▐▌▐▌ ▐▌ █      ▐▌   ▐▌ ▐▌▐▌   ▐▌   ▐▌   ▐▌ ▐▌\n' +
+        '▐▛▀▚▖▐▌ ▐▌▐▌   ▐▛▚▖     ▐▛▀▜▌▐▛▀▘  █      ▐▌   ▐▛▀▜▌▐▌   ▐▌   ▐▛▀▀▘▐▛▀▚▖\n' +
+        '▐▙▄▞▘▝▚▄▞▘▐▙▄▄▖▐▌ ▐▌    ▐▌ ▐▌▐▌  ▗▄█▄▖    ▝▚▄▄▖▐▌ ▐▌▐▙▄▄▖▐▙▄▄▖▐▙▄▄▖▐▌ ▐▌\n' +
+        '                                                                        \n')
+}
+
 const ask = (question) => new Promise(resolve => rl.question(question, resolve));
 
 // Sleep helper
@@ -88,7 +97,7 @@ async function startCalling(endpoint, delay, totalCalls, waitForCompletion = fal
             fireAndForget(endpoint);
             console.log(`➡️  [${count}${isUnlimited ? '' : '/' + totalCalls}] Request sent`);
         }
-        
+
         await sleep(delay);
     }
 
@@ -96,6 +105,7 @@ async function startCalling(endpoint, delay, totalCalls, waitForCompletion = fal
 }
 
 (async () => {
+    showHeading()
     const endpoint = await ask('🔗 Enter the API endpoint: ');
     const delayStr = await ask('⏱ Enter delay between calls in ms (default is 50): ');
     const totalStr = await ask('🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): ');
