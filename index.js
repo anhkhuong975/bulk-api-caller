@@ -74,17 +74,19 @@ function sequentialRequest(urlStr) {
  * @param {number} delay - Delay between requests in milliseconds
  * @param {number|null} totalCalls - Total number of calls to make (null for unlimited)
  * @param {boolean} waitForCompletion - Whether to wait for each request to complete before sending the next
+ * @param {number} instanceId - Instance identifier for logging purposes
  */
-async function startCalling(endpoint, delay, totalCalls, waitForCompletion = false) {
+async function startCalling(endpoint, delay, totalCalls, waitForCompletion = false, instanceId = 1) {
     let count = 0;
     const isUnlimited = totalCalls === null;
     const mode = waitForCompletion ? 'sequential' : 'fire-and-forget';
+    const instancePrefix = `[Instance ${instanceId}]`;
 
-    console.log(`🚀 Starting ${mode} calls to: ${endpoint}`);
+    console.log(`🚀 ${instancePrefix} Starting ${mode} calls to: ${endpoint}`);
     if (isUnlimited) {
-        console.log(`🔁 Will keep calling until you press Ctrl+C`);
+        console.log(`🔁 ${instancePrefix} Will keep calling until you press Ctrl+C`);
     } else {
-        console.log(`🔁 Will make ${totalCalls} calls`);
+        console.log(`🔁 ${instancePrefix} Will make ${totalCalls} calls`);
     }
 
     while (isUnlimited || count < totalCalls) {
@@ -92,34 +94,54 @@ async function startCalling(endpoint, delay, totalCalls, waitForCompletion = fal
         
         if (waitForCompletion) {
             await sequentialRequest(endpoint);
-            console.log(`➡️  [${count}${isUnlimited ? '' : '/' + totalCalls}] Request completed`);
+            console.log(`➡️  ${instancePrefix} [${count}${isUnlimited ? '' : '/' + totalCalls}] Request completed`);
         } else {
             fireAndForget(endpoint);
-            console.log(`➡️  [${count}${isUnlimited ? '' : '/' + totalCalls}] Request sent`);
+            console.log(`➡️  ${instancePrefix} [${count}${isUnlimited ? '' : '/' + totalCalls}] Request sent`);
         }
 
         await sleep(delay);
     }
 
-    rl.close();
+    console.log(`✅ ${instancePrefix} Completed all requests`);
 }
 
 (async () => {
-    showHeading()
+    showHeading();
     const endpoint = await ask('🔗 Enter the API endpoint: ');
     const delayStr = await ask('⏱ Enter delay between calls in ms (default is 50): ');
     const totalStr = await ask('🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): ');
     const waitStr = await ask('⏳ Wait for each request to complete before sending the next? (y/N, default is N): ');
+    const instancesStr = await ask('🔢 Enter number of instances to run (default is 1): ');
 
     const delay = delayStr ? parseInt(delayStr, 10) : 50;
     const totalCalls = totalStr ? parseInt(totalStr, 10) : null;
     const waitForCompletion = waitStr.toLowerCase() === 'y' || waitStr.toLowerCase() === 'yes';
+    const instanceCount = instancesStr ? parseInt(instancesStr, 10) : 1;
 
-    if (!endpoint || isNaN(delay) || (totalStr && isNaN(totalCalls))) {
-        console.error('❗ Invalid input.');
+    if (!endpoint || isNaN(delay) || (totalStr && isNaN(totalCalls)) || isNaN(instanceCount) || instanceCount < 1) {
+        console.error('❗ Invalid input. Please ensure all numeric values are valid and instance count is at least 1.');
         rl.close();
         process.exit(1);
     }
 
-    await startCalling(endpoint, delay, totalCalls, waitForCompletion);
+    console.log(`\n🎯 Configuration Summary:`);
+    console.log(`   📍 Endpoint: ${endpoint}`);
+    console.log(`   ⏱️  Delay: ${delay}ms`);
+    console.log(`   🔁 Total calls: ${totalCalls || 'Unlimited'}`);
+    console.log(`   ⏳ Mode: ${waitForCompletion ? 'Sequential' : 'Fire-and-forget'}`);
+    console.log(`   🔢 Instances: ${instanceCount}`);
+    console.log(`\n🚀 Starting ${instanceCount} instance${instanceCount > 1 ? 's' : ''}...\n`);
+
+    // Create and start multiple instances
+    const instances = [];
+    for (let i = 1; i <= instanceCount; i++) {
+        instances.push(startCalling(endpoint, delay, totalCalls, waitForCompletion, i));
+    }
+
+    // Wait for all instances to complete
+    await Promise.all(instances);
+    
+    console.log(`\n🎉 All ${instanceCount} instance${instanceCount > 1 ? 's have' : ' has'} completed successfully!`);
+    rl.close();
 })();
