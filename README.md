@@ -22,7 +22,7 @@ A simple Node.js tool for making bulk HTTP/HTTPS API calls with configurable del
 
 1. Clone or download this repository:
    ```bash
-   git clone <repository-url>
+   git clone https://github.com/anhkhuong975/bulk-api-caller.git
    cd bulk-api-caller
    ```
 
