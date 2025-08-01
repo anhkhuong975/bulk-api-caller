@@ -5,6 +5,7 @@ A simple Node.js tool for making bulk HTTP/HTTPS API calls with configurable del
 ## Features
 
 - 🚀 **Fire-and-forget requests**: Sends requests without waiting for responses to maximize throughput
+- ⏳ **Sequential mode**: Option to wait for each request to complete before sending the next
 - ⏱️ **Configurable delay**: Set custom delay between requests (default: 50ms)
 - 🔁 **Flexible call count**: Choose specific number of calls or run unlimited until manual stop
 - 🌐 **HTTP/HTTPS support**: Automatically detects and handles both HTTP and HTTPS endpoints
@@ -53,13 +54,19 @@ The tool will prompt you for:
    🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): 1000
    ```
 
+4. **Sequential Mode**: Whether to wait for each request to complete before sending the next (default: No)
+   ```
+   ⏳ Wait for each request to complete before sending the next? (y/N, default is N): N
+   ```
+
 ### Example Sessions
 
-#### Limited Calls
+#### Fire-and-Forget Mode (Default)
 ```
 🔗 Enter the API endpoint: https://jsonplaceholder.typicode.com/posts/1
 ⏱ Enter delay between calls in ms (default is 50): 100
 🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): 10
+⏳ Wait for each request to complete before sending the next? (y/N, default is N): N
 
 🚀 Starting fire-and-forget calls to: https://jsonplaceholder.typicode.com/posts/1
 🔁 Will make 10 calls
@@ -68,11 +75,26 @@ The tool will prompt you for:
 ...
 ```
 
+#### Sequential Mode
+```
+🔗 Enter the API endpoint: https://jsonplaceholder.typicode.com/posts/1
+⏱ Enter delay between calls in ms (default is 50): 500
+🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): 5
+⏳ Wait for each request to complete before sending the next? (y/N, default is N): y
+
+🚀 Starting sequential calls to: https://jsonplaceholder.typicode.com/posts/1
+🔁 Will make 5 calls
+➡️  [1/5] Request completed
+➡️  [2/5] Request completed
+...
+```
+
 #### Unlimited Calls
 ```
 🔗 Enter the API endpoint: https://api.example.com/health
 ⏱ Enter delay between calls in ms (default is 50): 
 🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): 
+⏳ Wait for each request to complete before sending the next? (y/N, default is N): 
 
 🚀 Starting fire-and-forget calls to: https://api.example.com/health
 🔁 Will keep calling until you press Ctrl+C
@@ -88,6 +110,7 @@ The tool will prompt you for:
 | **Endpoint** | Full URL of the API endpoint | Required | `https://api.example.com/test` |
 | **Delay** | Milliseconds between requests | 50ms | `100` (for 100ms) |
 | **Total Calls** | Number of requests to make | Unlimited | `1000` (leave empty for unlimited) |
+| **Sequential Mode** | Wait for each request to complete before sending next | No (fire-and-forget) | `y` or `yes` for sequential mode |
 
 ## Use Cases
 
@@ -99,13 +122,21 @@ The tool will prompt you for:
 
 ## Technical Details
 
-### Fire-and-Forget Approach
+### Request Modes
 
-This tool uses a "fire-and-forget" approach, meaning:
-- Requests are sent without waiting for responses
+#### Fire-and-Forget Mode (Default)
+This is the default mode that:
+- Sends requests without waiting for responses
 - Maximizes request throughput
 - Errors are silently ignored to maintain performance
-- Perfect for load testing scenarios
+- Perfect for high-volume load testing scenarios
+
+#### Sequential Mode
+This alternative mode:
+- Waits for each request to complete before sending the next
+- Provides more controlled request pacing
+- Better for testing response handling and avoiding overwhelming the target
+- Useful for scenarios where request order and completion matter
 
 ### Protocol Support
 
@@ -159,6 +190,12 @@ Feel free to submit issues, feature requests, or pull requests to improve this t
 This project is open source and available under the [MIT License](LICENSE).
 
 ## Changelog
+
+### v1.1.0
+- Added sequential mode option
+- Enhanced request control with wait-for-completion feature
+- Improved function documentation and comments
+- Updated user interface with new prompt
 
 ### v1.0.0
 - Initial release
