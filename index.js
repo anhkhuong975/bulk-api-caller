@@ -1,4 +1,3 @@
-// bulk-api-caller.js
 const readline = require('readline');
 const http = require('http');
 const https = require('https');
@@ -108,6 +107,7 @@ async function startCalling(endpoint, delay, totalCalls, waitForCompletion = fal
 
 (async () => {
     showHeading();
+
     const endpoint = await ask('🔗 Enter the API endpoint: ');
     const delayStr = await ask('⏱ Enter delay between calls in ms (default is 50): ');
     const totalStr = await ask('🔁 Enter total number of calls (leave empty for unlimited until Ctrl+C): ');
