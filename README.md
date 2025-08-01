@@ -45,7 +45,7 @@ The tool will prompt you for:
    🔗 Enter the API endpoint: https://api.example.com/endpoint
    ```
 
-2. **Delay**: Time between requests in milliseconds (default: 50ms)
+2. **Delay**: Time between requests in milliseconds within each instance (default: 50ms)
    ```
    ⏱ Enter delay between calls in ms (default is 50): 100
    ```
@@ -184,7 +184,7 @@ The tool will prompt you for:
 | Parameter | Description | Default | Example |
 |-----------|-------------|---------|----------|
 | **Endpoint** | Full URL of the API endpoint | Required | `https://api.example.com/test` |
-| **Delay** | Milliseconds between requests | 50ms | `100` (for 100ms) |
+| **Delay** | Milliseconds between requests within each instance | 50ms | `100` (for 100ms) |
 | **Total Calls** | Number of requests to make | Unlimited | `1000` (leave empty for unlimited) |
 | **Sequential Mode** | Wait for each request to complete before sending next | No (fire-and-forget) | `y` or `yes` for sequential mode |
 | **Instance Count** | Number of concurrent instances to run | 1 | `3` (for 3 parallel instances) |
@@ -218,6 +218,8 @@ This alternative mode:
 #### Multiple Instances
 The tool supports running multiple concurrent instances:
 - **Parallel Execution**: Each instance runs independently and concurrently
+- **Independent Timing**: Each instance has its own delay timing between requests
+- **No Inter-Instance Delay**: Instances start simultaneously without delays between them
 - **Instance Identification**: All console output includes instance identification for clarity
 - **Coordinated Completion**: All instances must complete before the tool exits
 - **Scalable Load**: Easily multiply your load by running multiple instances
